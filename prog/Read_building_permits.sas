@@ -48,7 +48,6 @@ proc ginside includeborder
   id geoid10;
 run;
 
-
 /* Add standard geographies to each permit */
 data permits_&year._geo;
 	set permits_&year._join;
@@ -69,11 +68,71 @@ data permits_&year._geo;
 	%Block10_to_tr00;
 	%Block10_to_tr10;
 	%Block10_to_vp12;
-	%Block10_to_ward02
+	%Block10_to_ward02;
 	%Block10_to_ward12;
 	%Block10_to_zip;
 
 
+permit_&year.=1;
+
+if PERMIT_TYP= "CONSTRUCTION" then permit_construction_&year. = 1 ;
+if PERMIT_TYP= "HOME OCCUPATION" then permits_homeoccupation_&year.= 1 ;
+if PERMIT_TYP= "POST CARD" then permits_postcard_&year.= 1 ;
+if PERMIT_TYP= "SHOP DRAWING" then permits_shopdrawing_&year.= 1 ;
+if PERMIT_TYP= "SUPPLEMENTAL" then permits_supplemental_&year.= 1 ;
+
 run;
+
+proc freq data=permits_&year._geo;
+tables PERMIT_TYP;
+run;
+
+%macro summarizebygeo(geo);
+proc summary data= permits_&year._geo;
+	class &geo.;
+	ways 0 1; 
+	var permit_&year. permit_construction_&year. permits_homeoccupation_&year. permits_postcard_&year. permits_shopdrawing_&year. permits_supplemental_&year.;
+	output out= permits_sum_&geo._1(drop= _FREQ_) sum=;
+run;
+
+data permits_sum_&geo._&year. ;
+	set permits_sum_&geo._1;
+	if _TYPE_=0 then &geo.="All";
+run;
+
+data permits_sum_&geo._&year. ;
+	set permits_sum_&geo._&year.;
+	drop _TYPE_;
+run;
+
+%Finalize_data_set( 
+  data=permits_sum_&geo._&year.,
+  out=permits_sum_&geo._&year.,
+  outlib=DCRA,
+  label="Building permit by type statistics for DC, MD, VA and WV",
+  sortby=&geo.,
+  restrictions=None,
+  revisions=;
+  );
+
+%mend summarizebygeo;
+
+%summarizebygeo(Anc2002);
+%summarizebygeo(Anc2012);
+%summarizebygeo(bridgepk);
+%summarizebygeo(CITY);
+%summarizebygeo(Cluster2000);
+%summarizebygeo(Cluster_tr2000);
+%summarizebygeo(eor);
+%summarizebygeo(cluster2017);
+%summarizebygeo(Psa2004);
+%summarizebygeo(Psa2012);
+%summarizebygeo(stantoncommons);
+%summarizebygeo(Geo2000);
+%summarizebygeo(Geo2010);
+%summarizebygeo(VoterPre2012);
+%summarizebygeo(Ward2002);
+%summarizebygeo(Ward2012);
+%summarizebygeo(Zip);
 
 
