@@ -49,18 +49,18 @@ run;
 proc summary data = permits_&geo._allyears;
 	class &geo.;
 	var permits_:;
-	output out= permits_sum_&geosuf. sum=;
+	output out= permits_sum&geosuf. sum=;
 run;
 
-data permits_sum_&geosuf._final;
-	set permits_sum_&geosuf.;
+data permits_sum&geosuf._final;
+	set permits_sum&geosuf.;
 	drop _type_ _freq_;
 	if _type_ = 1;
 run;
 
 %Finalize_data_set( 
-  data=permits_sum_&geosuf._final,
-  out=permits_sum_&geosuf.,
+  data=permits_sum&geosuf._final,
+  out=permits_sum&geosuf.,
   outlib=DCRA,
   label="DC building permits summary, &start_yr. to &end_yr., &geolbl.",
   sortby=&geo.,
