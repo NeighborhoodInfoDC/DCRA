@@ -126,6 +126,7 @@ data permits_&year._geo;
 
 	drop geoid10 segment _onborder_ LastModified_i LastModified_c IssueDate_i IssueDate_c;
 
+	format appstatus appstatus. permittype permittype. permitcategory permitcat. permitsubcategory permitsub.;
 
 run;
 
