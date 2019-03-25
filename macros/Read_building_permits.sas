@@ -19,8 +19,8 @@ proc mapimport out=permits_&year._in
 	datafile="&_dcdata_r_path\DCRA\Raw\Building_Permits_in_&year..shp";
  	select applicatio desc_of_wo fees_paid fee_type full_addre issue_date lastmodifi maraddress owner_name
 		   permit_app permit_cat permit_id permit_sub permit_typ ssl xcoord ycoord zoning objectid;
-	rename applicatio=AppStatus desc_of_wo=DescOfWork fees_paid=Fees fee_type=FeeType full_addre=Address issue_date=IssueDate
-		   lastmodifi=LastModified maraddress=MARAddress owner_name=OwnerName permit_app=ApplicantName permit_cat=PermitCategory
+	rename applicatio=AppStatus desc_of_wo=DescOfWork fees_paid=Fees fee_type=FeeType full_addre=Address issue_date=IssueDate_i
+		   lastmodifi=LastModified_i maraddress=MARAddress owner_name=OwnerName permit_app=ApplicantName permit_cat=PermitCategory
 		   permit_id=PermitID permit_sub=PermitSubcategory permit_typ=PermitType;
 run;
 
@@ -80,7 +80,7 @@ data permits_&year._geo;
 		  feetype = "Description and amount of fees required for permit"
 		  address = "Address on permit application"
 		  issuedate = "Permit issue date"
-		  lastmodified = "Last modified date and time"
+		  lastmodified = "Last modified date"
 		  maraddress = "MAR address ID"
 		  objectID = "GIS ObjectID"
 		  Ownername = "Name of property owner"
@@ -95,6 +95,14 @@ data permits_&year._geo;
 		  ycoord = "Longitude (MD State Plane)"
 	;
 
+	LastModified_c = substr(LastModified_i,1,10);
+	IssueDate_c = substr(IssueDate_i,1,10);
+
+	IssueDate = input(IssueDate_c,yymmdd10.);
+	LastModified = input(LastModified_c,yymmdd10.);
+
+	format IssueDate date9. LastModified date9.;
+
 	permits_&year.=1;
 	permits_construction_&year.= 0;
 	permits_homeoccupation_&year.= 0;
@@ -108,15 +116,15 @@ data permits_&year._geo;
 	if PermitType= "SHOP DRAWING" then permits_shopdrawing_&year.= 1 ;
 	if PermitType= "SUPPLEMENTAL" then permits_supplemental_&year.= 1 ;
 
-	label permit_&year. = "Total building permits in &year."
-		  permit_construction_&year. = "Construction permits in &year."
+	label permits_&year. = "Total building permits in &year."
+		  permits_construction_&year. = "Construction permits in &year."
 		  permits_homeoccupation_&year. = "Home occupation permits in &year."
 		  permits_postcard_&year. = "Postcard permits in &year."
 		  permits_shopdrawing_&year. = "Permit drawings in &year."
 		  permits_supplemental_&year. = "Supplemental building permits in &year."
 	;
 
-	drop geoid10 segment _onborder_;
+	drop geoid10 segment _onborder_ LastModified_i LastModified_c IssueDate_i IssueDate_c;
 
 
 run;
