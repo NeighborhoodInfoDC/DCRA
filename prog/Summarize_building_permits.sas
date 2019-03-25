@@ -16,33 +16,52 @@
 
 ** Define libraries **;
 %DCData_lib( DCRA )
-%DCData_lib( OCTO )
 
+/* Update start and end year */
 %let start_yr = 2009;
 %let end_yr = 2018;
 
-%let summaryvars = permit_&year. permit_construction_&year. permits_homeoccupation_&year. permits_postcard_&year. permits_shopdrawing_&year. permits_supplemental_&year.;
+/* Update base file list with new year of data */
+%let base_files = dcra.Permits_base_2009
+				  dcra.Permits_base_2010
+				  dcra.Permits_base_2011
+				  dcra.Permits_base_2012
+				  dcra.Permits_base_2013
+				  dcra.Permits_base_2014
+				  dcra.Permits_base_2015
+				  dcra.Permits_base_2016
+				  dcra.Permits_base_2017
+				  dcra.Permits_base_2018 ;
+
+
+/* No modifications necessary beyond this point */
 
 %macro permits_by_geo (geo);
 
-proc summary data= permits_&year._geo;
-	class &geo.;
-	var &summaryvars.;
-	output out= permits_sum_&geo._&year._in sum=;
+%let geosuf = %sysfunc( putc( %upcase(&geo), $geosuf. ) );
+
+data permits_&geo._allyears;
+	set &base_files.;
+	keep &geo. permits_: ;
 run;
 
-data permits_sum_&geo._&year. ;
-	set permits_sum_&geo._1;
-	if _type_=1 ;
-	drop _type_ _freq_;
+proc summary data = permits_&geo._allyears;
+	class &geo.;
+	var permits_:;
+	output out= permits_sum_&geosuf. sum=;
+run;
 
+data permits_sum_&geosuf._final;
+	set permits_sum_&geosuf.;
+	drop _type_ _freq_;
+	if _type_ = 1;
 run;
 
 %Finalize_data_set( 
-  data=permits_sum_&geo._&year.,
-  out=permits_sum_&geo._&year.,
+  data=permits_sum_&geosuf._final,
+  out=permits_sum_&geosuf.,
   outlib=DCRA,
-  label="Building permit by type statistics for DC, MD, VA and WV",
+  label="DC building permits summary, &start_yr. to &end_yr., &geo.",
   sortby=&geo.,
   restrictions=None,
   revisions=;
@@ -53,11 +72,10 @@ run;
 %permits_by_geo(Anc2002);
 %permits_by_geo(Anc2012);
 %permits_by_geo(bridgepk);
-%permits_by_geo(CITY);
-%permits_by_geo(Cluster2000);
+%permits_by_geo(city);
 %permits_by_geo(Cluster_tr2000);
-%permits_by_geo(eor);
 %permits_by_geo(cluster2017);
+%permits_by_geo(eor);
 %permits_by_geo(Psa2004);
 %permits_by_geo(Psa2012);
 %permits_by_geo(stantoncommons);
