@@ -136,7 +136,7 @@ run;
   out=permits_base_&year.,
   outlib=DCRA,
   label="Building permits in &year.",
-  sortby=issuedate,
+  sortby=issuedate permitid,
   restrictions=None,
   revisions=&revisions.;
   );
