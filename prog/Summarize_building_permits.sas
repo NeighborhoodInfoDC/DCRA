@@ -39,6 +39,7 @@
 %macro permits_by_geo (geo);
 
 %let geosuf = %sysfunc( putc( %upcase(&geo), $geosuf. ) );
+%let geolbl = %sysfunc( putc( %upcase(&geo), $geolbl. ) );
 
 data permits_&geo._allyears;
 	set &base_files.;
@@ -61,7 +62,7 @@ run;
   data=permits_sum_&geosuf._final,
   out=permits_sum_&geosuf.,
   outlib=DCRA,
-  label="DC building permits summary, &start_yr. to &end_yr., &geo.",
+  label="DC building permits summary, &start_yr. to &end_yr., &geolbl.",
   sortby=&geo.,
   restrictions=None,
   revisions=;
