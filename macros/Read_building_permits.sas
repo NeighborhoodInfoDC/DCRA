@@ -95,9 +95,14 @@ data permits_&year._geo;
 		  ycoord = "Longitude (MD State Plane)"
 	;
 
-	permit_&year.=1;
+	permits_&year.=1;
+	permits_construction_&year.= 0;
+	permits_homeoccupation_&year.= 0;
+	permits_postcard_&year.= 0;
+	permits_shopdrawing_&year.= 0;
+	permits_supplemental_&year.= 0;
 
-	if PermitType= "CONSTRUCTION" then permit_construction_&year. = 1 ;
+	if PermitType= "CONSTRUCTION" then permits_construction_&year. = 1 ;
 	if PermitType= "HOME OCCUPATION" then permits_homeoccupation_&year.= 1 ;
 	if PermitType= "POST CARD" then permits_postcard_&year.= 1 ;
 	if PermitType= "SHOP DRAWING" then permits_shopdrawing_&year.= 1 ;
