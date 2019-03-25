@@ -135,7 +135,7 @@ run;
   data=permits_&year._geo,
   out=permits_base_&year.,
   outlib=DCRA,
-  label="Building permits in &year.",
+  label="DC building permits in &year.",
   sortby=issuedate permitid,
   restrictions=None,
   revisions=&revisions.;
