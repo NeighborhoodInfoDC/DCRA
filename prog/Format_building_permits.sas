@@ -18,7 +18,7 @@
 %DCData_lib( DCRA )
 
 /* Formats for building permits raw data */
-proc format;
+proc format library=dcra;
 	value $appstatus
 		'APPLICATION ACCEPTED'	= 'APPLICATION ACCEPTED'
 		'APPLICATION APPROVED'	= 'APPLICATION APPROVED'
@@ -98,7 +98,7 @@ proc format;
 run;
 
 
-proc catalog catalog=DCRA.formats;
+proc catalog catalog=dcra.formats;
   modify appstatus (desc="Application status") / entrytype=formatc;
   modify permittype (desc="Type of permit") / entrytype=formatc;
   modify permitcat (desc="Category of permit") / entrytype=formatc; ;
