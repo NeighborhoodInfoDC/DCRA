@@ -95,8 +95,23 @@ data permits_&year._geo;
 		  ycoord = "Longitude (MD State Plane)"
 	;
 
+	%if &year. <= 2018 %then %do;
+
 	LastModified_c = substr(LastModified_i,1,10);
 	IssueDate_c = substr(IssueDate_i,1,10);
+
+	%end;
+
+	%else %do;
+
+	LastModified_z = put(LastModified_i,z8.);
+	IssueDate_z = put(IssueDate_i,z8.);
+	drop LastModified_z IssueDate_z;
+
+	LastModified_c = substr(LastModified_z,1,4) || "-" || substr(LastModified_z,5,2) || "-" || substr(LastModified_z,7,2) ;
+	IssueDate_c = substr(IssueDate_z,1,4) || "-" || substr(IssueDate_z,5,2) || "-" || substr(IssueDate_z,7,2) ;
+
+	%end;
 
 	IssueDate = input(IssueDate_c,yymmdd10.);
 	LastModified = input(LastModified_c,yymmdd10.);
